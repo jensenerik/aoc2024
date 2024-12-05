@@ -62,7 +62,7 @@ def check_all_orders(rules: List[Tuple[int, int]], page_orders: List[List[int]])
 
 
 def compare_pages(rules: List[Tuple[int, int]]) -> Callable[[int, int], int]:
-    return lambda x, y: (-1) ** ((x, y) in rules)
+    return lambda x, y: ((x, y) in rules) - ((y, x) in rules)
 
 
 def reorder(rules: List[Tuple[int, int]], page_order: List[int]) -> List[int]:
