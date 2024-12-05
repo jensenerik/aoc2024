@@ -1,4 +1,5 @@
-from typing import List, Tuple
+from functools import cmp_to_key
+from typing import Callable, List, Tuple
 
 from . import read_input
 
@@ -60,20 +61,12 @@ def check_all_orders(rules: List[Tuple[int, int]], page_orders: List[List[int]])
     return running_sum
 
 
+def compare_pages(rules: List[Tuple[int, int]]) -> Callable[[int, int], int]:
+    return lambda x, y: (-1) ** ((x, y) in rules)
+
+
 def reorder(rules: List[Tuple[int, int]], page_order: List[int]) -> List[int]:
-    applicable_rules = [rule for rule in rules if rule[0] in page_order and rule[1] in page_order]
-    mutable_order = page_order
-    good_pass = False
-    while not good_pass:
-        good_pass = True
-        for rule in applicable_rules:
-            left_index = mutable_order.index(rule[0])
-            right_index = mutable_order.index(rule[1])
-            if left_index > right_index:
-                good_pass = False
-                mutable_order[left_index] = rule[1]
-                mutable_order[right_index] = rule[0]
-    return mutable_order
+    return sorted(page_order, key=cmp_to_key(compare_pages(rules)))
 
 
 def rearrange_bad_orders(rules: List[Tuple[int, int]], page_orders: List[List[int]]) -> int:
