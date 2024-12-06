@@ -1,4 +1,4 @@
-from typing import Dict, Tuple
+from typing import Dict, Set, Tuple
 
 from . import read_input
 
@@ -28,7 +28,7 @@ def find_guard(location_map: Dict[Tuple[int, int], str]) -> Tuple[Tuple[int, int
     raise Exception("No guard found")
 
 
-def trace_path(location_map: Dict[Tuple[int, int], str]) -> int:
+def trace_path(location_map: Dict[Tuple[int, int], str]) -> Set[Tuple[int, int]]:
     guard_loc, guard_dir = find_guard(location_map)
     guard_visits = set()
     guard_present = True
@@ -42,7 +42,7 @@ def trace_path(location_map: Dict[Tuple[int, int], str]) -> int:
             guard_loc = next_loc
         else:
             guard_present = False
-    return len(guard_visits)
+    return guard_visits
 
 
 def loop_detect(location_map: Dict[Tuple[int, int], str]) -> bool:
@@ -66,18 +66,19 @@ def loop_detect(location_map: Dict[Tuple[int, int], str]) -> bool:
 
 
 def check_all_loops(location_map: Dict[Tuple[int, int], str]) -> int:
+    original_path = trace_path(location_map)
+    original_path.remove(find_guard(location_map)[0])
     loop_cnt = 0
-    for k, v in location_map.items():
-        if v == ".":
-            loop_cnt += loop_detect(location_map | {k: "#"})
+    for obstacle_loc in original_path:
+        loop_cnt += loop_detect(location_map | {obstacle_loc: "#"})
     return loop_cnt
 
 
-assert trace_path(parse_input(EXAMPLE)) == 41
+assert len(trace_path(parse_input(EXAMPLE))) == 41
 assert not loop_detect(parse_input(EXAMPLE))
 assert loop_detect(parse_input(EXAMPLE) | {(6, 3): "#"})
 assert check_all_loops(parse_input(EXAMPLE)) == 6
 
 daily_input = read_input("06")
-print(trace_path(parse_input(daily_input)))
+print(len(trace_path(parse_input(daily_input))))
 print(check_all_loops(parse_input(daily_input)))
