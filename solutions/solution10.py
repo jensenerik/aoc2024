@@ -28,31 +28,23 @@ def neighbors(loc: Tuple[int, int], height: int, width: int) -> List[Tuple[int, 
     return [n for n in neigh if n[0] in range(height) and n[1] in range(width)]
 
 
-def trace_trails(trail_map: Dict[Tuple[int, int], int], start: Tuple[int, int]) -> Tuple[int, int]:
+def efficient_trail_count(input_block: str) -> Tuple[int, int]:
+    trail_map = parse_input(input_block)
     max_height = max(k[1] for k in trail_map.keys()) + 1
     max_width = max(k[0] for k in trail_map.keys()) + 1
+    current_locs = {start: [start] for start in find_starts(trail_map)}
     current_elev = 0
-    current_locs = [start]
     while current_elev < 9:
         current_elev += 1
-        new_locs = []
-        for loc in current_locs:
-            new_locs.extend([loc for loc in neighbors(loc, max_height, max_width) if trail_map[loc] == current_elev])
+        new_locs: Dict[Tuple[int, int], List[Tuple[int, int]]] = {}
+        for loc in current_locs.keys():
+            for neighbor in [loc for loc in neighbors(loc, max_height, max_width) if trail_map[loc] == current_elev]:
+                new_locs[neighbor] = new_locs.get(neighbor, []) + current_locs[loc]
         current_locs = new_locs
-    return len(set(current_locs)), len(current_locs)
+    return sum([len(set(v)) for v in current_locs.values()]), sum([len(v) for v in current_locs.values()])
 
 
-def trail_count(input_block: str) -> Tuple[int, int]:
-    trail_map = parse_input(input_block)
-    total_endpoints = 0
-    total_trails = 0
-    for start in find_starts(trail_map):
-        new_ends, new_trails = trace_trails(trail_map, start)
-        total_endpoints += new_ends
-        total_trails += new_trails
-    return total_endpoints, total_trails
+assert efficient_trail_count(EXAMPLE) == (36, 81)
 
-
-assert trail_count(EXAMPLE) == (36, 81)
 daily_input = read_input("10")
-print(trail_count(daily_input))
+print(efficient_trail_count(daily_input))
