@@ -1,6 +1,6 @@
 from typing import Dict, Tuple
 
-from . import read_input
+from . import read_input, v_add
 
 EXAMPLE = """##########
 #..O..O.O#
@@ -95,10 +95,6 @@ class RobotMap:
             for row_coord in range(row_length):
                 row = row + self.robot_map[(row_num, row_coord)]
             print(row)
-
-
-def v_add(position: Tuple[int, int], velocity: Tuple[int, int]) -> Tuple[int, int]:
-    return position[0] + velocity[0], position[1] + velocity[1]
 
 
 def parse_input(input_block: str, double: bool) -> Tuple[RobotMap, str]:
