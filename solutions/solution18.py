@@ -67,11 +67,15 @@ def calc_path(blocks: List[Tuple[int, int]], dimensions: Tuple[int, int], max_bl
 
 
 def drop_blocks(blocks: List[Tuple[int, int]], dimensions: Tuple[int, int]):
-    for num in range(len(blocks)):
-        if calc_path(blocks, dimensions, num) is None:
-            return blocks[num - 1]
-    else:
-        return None
+    max_good = 0
+    min_bad = len(blocks)
+    while min_bad > max_good + 1:
+        trial = (max_good + min_bad) // 2
+        if calc_path(blocks, dimensions, trial) is None:
+            min_bad = trial
+        else:
+            max_good = trial
+    return blocks[min_bad - 1]
 
 
 assert calc_path(parse_input(EXAMPLE), EXAMPLE_DIMENSIONS, 12) == 22
