@@ -112,11 +112,7 @@ def skip_all() -> int:
     answers = []
     while len(checking) > 0:
         regA, digit = checking.pop(0)
-        # regA = regA_start
-        # while regA > 0:
         val = (((regA % 8) ^ 1) ^ 5) ^ (regA // 2 ** ((regA % 8) ^ 1)) % 8
-        # output.append(val)
-        # regA = regA // 8
         if val == program[-digit]:
             if digit == len(program):
                 answers.append(regA)
